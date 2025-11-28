@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Channel Discovery Control Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #222222;
+            --border-color: #2a2a2a;
+            --text-primary: #e5e5e5;
+            --text-secondary: #9a9a9a;
+            --text-tertiary: #6a6a6a;
+            --accent-blue: #4a9eff;
+            --accent-blue-hover: #5eaeff;
+            --success-green: #4ade80;
+            --error-red: #ef4444;
+            --warning-yellow: #fbbf24;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            letter-spacing: 0.01em;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            margin-bottom: 48px;
+        }
+        
+        h1 {
+            font-size: 32px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+        
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 16px;
+            font-weight: 400;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+        
+        @media (min-width: 1024px) {
+            .grid {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+        
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 32px;
+            transition: border-color 0.2s ease;
+        }
+        
+        .card:hover {
+            border-color: #3a3a3a;
+        }
+        
+        .card-header {
+            margin-bottom: 24px;
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .card-description {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+        
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+        
+        .label-hint {
+            color: var(--text-secondary);
+            font-weight: 400;
+            font-size: 13px;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            padding: 12px 14px;
+            font-size: 14px;
+            color: var(--text-primary);
+            font-family: inherit;
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+        
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            background: var(--bg-secondary);
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+        
+        input[type="number"] {
+            max-width: 120px;
+        }
+        
+        .button-primary {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.1s ease;
+            width: 100%;
+        }
+        
+        .button-primary:hover:not(:disabled) {
+            background: var(--accent-blue-hover);
+        }
+        
+        .button-primary:active:not(:disabled) {
+            transform: translateY(1px);
+        }
+        
+        .button-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .button-secondary {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: border-color 0.2s ease, color 0.2s ease;
+        }
+        
+        .button-secondary:hover {
+            border-color: #3a3a3a;
+            color: var(--text-primary);
+        }
+        
+        .status-panel {
+            position: sticky;
+            top: 40px;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            margin-bottom: 16px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-tertiary);
+        }
+        
+        .status-dot.ready {
+            background: var(--success-green);
+            box-shadow: 0 0 8px rgba(74, 222, 128, 0.4);
+        }
+        
+        .status-dot.running {
+            background: var(--accent-blue);
+            box-shadow: 0 0 8px rgba(74, 158, 255, 0.4);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .status-dot.error {
+            background: var(--error-red);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .status-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .progress-log {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            padding: 16px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            display: none;
+        }
+        
+        .progress-log.active {
+            display: block;
+        }
+        
+        .log-entry {
+            margin-bottom: 4px;
+            color: var(--text-secondary);
+        }
+        
+        .log-entry.success {
+            color: var(--success-green);
+        }
+        
+        .log-entry.error {
+            color: var(--error-red);
+        }
+        
+        .log-entry.info {
+            color: var(--accent-blue);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .info-item {
+            padding: 12px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+        }
+        
+        .info-label {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+        
+        .info-value {
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .results-container {
+            margin-top: 24px;
+            display: none;
+        }
+        
+        .results-container.active {
+            display: block;
+        }
+        
+        .result-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: border-color 0.2s ease;
+        }
+        
+        .result-card:hover {
+            border-color: #3a3a3a;
+        }
+        
+        .result-card.relevant {
+            border-left: 3px solid var(--success-green);
+        }
+        
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+        
+        .result-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .result-badge {
+            padding: 4px 8px;
+            border-radius: 2px;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .result-badge.high {
+            background: rgba(74, 222, 128, 0.15);
+            color: var(--success-green);
+        }
+        
+        .result-badge.medium {
+            background: rgba(251, 191, 36, 0.15);
+            color: var(--warning-yellow);
+        }
+        
+        .result-badge.low {
+            background: rgba(154, 154, 154, 0.15);
+            color: var(--text-secondary);
+        }
+        
+        .result-meta {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        
+        .result-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        
+        .result-link {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        
+        .result-link:hover {
+            color: var(--accent-blue-hover);
+        }
+        
+        .example-text {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            font-style: italic;
+            margin-top: 4px;
+        }
+        
+        .divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 24px 0;
+        }
+        
+        .quick-links {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .quick-link {
+            font-size: 13px;
+            color: var(--accent-blue);
+            text-decoration: none;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+        
+        .quick-link:hover {
+            border-color: var(--accent-blue);
+            background: rgba(74, 158, 255, 0.05);
+        }
+        
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3a3a3a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Channel Discovery Control Panel</h1>
+            <p class="subtitle">AI-powered micro-influencer discovery with customizable product context</p>
+        </header>
+        
+        <div class="grid">
+            <div class="main-panel">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Product & Search Configuration</h2>
+                        <p class="card-description">Define your product and target audience to generate relevant search queries</p>
+                    </div>
+                    
+                    <form id="discoveryForm">
+                        <div class="form-group">
+                            <label>
+                                Product Description
+                                <span class="label-hint">What are you selling?</span>
+                            </label>
+                            <textarea 
+                                id="productContext" 
+                                name="productContext" 
+                                placeholder="A hard drive containing a comprehensive offline knowledge library for survival, preparedness, and self-reliance. Includes medical guides, technical manuals, agricultural knowledge, and essential information for grid-down scenarios."
+                                required
+                            ></textarea>
+                            <p class="example-text">Be specific about features, benefits, and use cases</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>
+                                Target Direction
+                                <span class="label-hint">What type of channels are you looking for?</span>
+                            </label>
+                            <textarea 
+                                id="targetDirection" 
+                                name="targetDirection"
+                                placeholder="Looking for YouTube channels focused on prepping, survival skills, homesteading, off-grid living, and emergency preparedness. Target audience: 25-55 year old preppers, survivalists, and self-reliance enthusiasts who value offline knowledge and disaster readiness."
+                                required
+                            ></textarea>
+                            <p class="example-text">Describe your ideal channel type, audience demographics, and content themes</p>
+                        </div>
+                        
+                        <div class="divider"></div>
+                        
+                        <div class="form-group">
+                            <label for="numQueries">Number of Search Queries</label>
+                            <input 
+                                type="number" 
+                                id="numQueries" 
+                                name="numQueries" 
+                                min="1" 
+                                max="50" 
+                                value="3"
+                                required
+                                oninput="updateTimeEstimate()"
+                            >
+                            <p class="example-text">AI will generate this many unique search queries (1-50)</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="resultsPerQuery">Channels per Query</label>
+                            <input 
+                                type="number" 
+                                id="resultsPerQuery" 
+                                name="resultsPerQuery" 
+                                min="1" 
+                                max="20" 
+                                value="5"
+                                required
+                                oninput="updateTimeEstimate()"
+                            >
+                            <p class="example-text">How many channels to discover per search query (1-20)</p>
+                        </div>
+                        
+                        <div class="form-group" style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 4px; padding: 12px;">
+                            <label style="color: var(--accent-purple); margin-bottom: 8px;">⏱️ Estimated Time</label>
+                            <div id="timeEstimate" style="font-size: 24px; font-weight: 600; color: var(--text-primary);">
+                                ~3 minutes
+                            </div>
+                            <p class="example-text" style="margin-top: 4px; margin-bottom: 0;">
+                                <span id="channelEstimate">~15 channels</span> will be discovered and analyzed
+                            </p>
+                        </div>
+                        
+                        <div class="divider"></div>
+                        
+                        <div class="form-group">
+                            <label>Subscriber Count Range</label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                <div>
+                                    <label for="minSubscribers" style="font-size: 13px; color: var(--text-secondary); margin-bottom: 4px;">Minimum</label>
+                                    <input 
+                                        type="number" 
+                                        id="minSubscribers" 
+                                        name="minSubscribers" 
+                                        min="0" 
+                                        max="10000000"
+                                        value="10000"
+                                        placeholder="10,000"
+                                        style="max-width: 100%;"
+                                    >
+                                </div>
+                                <div>
+                                    <label for="maxSubscribers" style="font-size: 13px; color: var(--text-secondary); margin-bottom: 4px;">Maximum</label>
+                                    <input 
+                                        type="number" 
+                                        id="maxSubscribers" 
+                                        name="maxSubscribers" 
+                                        min="0" 
+                                        max="100000000"
+                                        value="500000"
+                                        placeholder="500,000"
+                                        style="max-width: 100%;"
+                                    >
+                                </div>
+                            </div>
+                            <p class="example-text">Filter channels by subscriber count (micro-influencers: 10k-100k, mid-tier: 100k-500k)</p>
+                        </div>
+                        
+                        <div class="divider"></div>
+                        
+                        <button type="submit" class="button-primary" id="startButton">
+                            Start Discovery Workflow
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="results-container" id="resultsContainer">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Discovery Results</h2>
+                            <p class="card-description">AI-analyzed channels ranked by relevance</p>
+                        </div>
+                        <div id="resultsContent"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="status-panel">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Status</h3>
+                    </div>
+                    
+                    <div class="status-indicator">
+                        <div class="status-dot" id="statusDot"></div>
+                        <div class="status-text" id="statusText">Ready to start</div>
+                    </div>
+                    
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Queries</div>
+                            <div class="info-value" id="queriesCount">0</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Channels</div>
+                            <div class="info-value" id="channelsCount">0</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Relevant</div>
+                            <div class="info-value" id="relevantCount">0</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Analyzed</div>
+                            <div class="info-value" id="analyzedCount">0</div>
+                        </div>
+                    </div>
+                    
+                    <div class="divider"></div>
+                    
+                    <div style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 3px; padding: 12px; margin-bottom: 16px;">
+                        <div style="font-size: 11px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Session Stats</div>
+                        <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.8;">
+                            <div>Total Queries: <span id="sessionQueriesTotal" style="color: var(--text-primary); font-weight: 500;">0</span></div>
+                            <div>Total Discovered: <span id="sessionDiscoveredTotal" style="color: var(--text-primary); font-weight: 500;">0</span></div>
+                            <div>Total Analyzed: <span id="sessionAnalyzedTotal" style="color: var(--text-primary); font-weight: 500;">0</span></div>
+                        </div>
+                        <button onclick="resetSession()" style="width: 100%; margin-top: 12px; padding: 8px; font-size: 12px;">Reset Session</button>
+                    </div>
+                    
+                    <div class="divider"></div>
+                    
+                    <div class="progress-log" id="progressLog"></div>
+                    
+                    <div class="divider"></div>
+                    
+                    <div class="quick-links">
+                        <a href="channels_viewer.html" class="quick-link" target="_blank">View Database</a>
+                        <a href="view_diagrams.html" class="quick-link" target="_blank">View Diagrams</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const form = document.getElementById('discoveryForm');
+        const startButton = document.getElementById('startButton');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        const progressLog = document.getElementById('progressLog');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const resultsContent = document.getElementById('resultsContent');
+        
+        const queriesCount = document.getElementById('queriesCount');
+        const channelsCount = document.getElementById('channelsCount');
+        const relevantCount = document.getElementById('relevantCount');
+        const analyzedCount = document.getElementById('analyzedCount');
+        
+        let eventSource = null;
+        
+        // Time estimation function
+        function updateTimeEstimate() {
+            const numQueries = parseInt(document.getElementById('numQueries').value) || 3;
+            const resultsPerQuery = parseInt(document.getElementById('resultsPerQuery').value) || 5;
+            
+            // Calculate expected channels (with filtering)
+            const totalVideos = numQueries * resultsPerQuery;
+            const expectedChannels = Math.floor(totalVideos * 0.6); // 60% pass subscriber filter
+            const afterAIFilter = Math.floor(expectedChannels * 0.7); // 70% pass AI filter
+            
+            // Time calculation (with parallelization)
+            // Query generation: 5 sec
+            // Parallel YouTube search: 10 sec base + 2 sec per query batch (5 at a time)
+            // Parallel channel extraction: 15 sec base + 3 sec per 10 channels
+            // AI farm filtering: instant
+            // Enhanced extraction: 12 sec per channel (sequential)
+            // Claude analysis: 3 sec per channel (sequential)
+            
+            const queryGenTime = 5;
+            const searchTime = 10 + Math.ceil(numQueries / 5) * 5;
+            const extractionTime = 15 + Math.ceil(totalVideos / 10) * 10;
+            const enhancedTime = expectedChannels * 12;
+            const aiFilterTime = 2;
+            const claudeTime = afterAIFilter * 3;
+            
+            const totalSeconds = queryGenTime + searchTime + extractionTime + enhancedTime + aiFilterTime + claudeTime;
+            const minutes = Math.ceil(totalSeconds / 60);
+            
+            // Update display
+            document.getElementById('timeEstimate').textContent = 
+                minutes < 60 ? `~${minutes} minute${minutes === 1 ? '' : 's'}` : `~${Math.round(minutes / 60 * 10) / 10} hours`;
+            document.getElementById('channelEstimate').textContent = `~${afterAIFilter} channels`;
+        }
+        
+        // Initialize estimate on load
+        updateTimeEstimate();
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                productContext: document.getElementById('productContext').value,
+                targetDirection: document.getElementById('targetDirection').value,
+                numQueries: parseInt(document.getElementById('numQueries').value),
+                resultsPerQuery: parseInt(document.getElementById('resultsPerQuery').value),
+                minSubscribers: parseInt(document.getElementById('minSubscribers').value) || 0,
+                maxSubscribers: parseInt(document.getElementById('maxSubscribers').value) || 100000000
+            };
+            
+            startWorkflow(formData);
+        });
+        
+        function startWorkflow(formData) {
+            // Reset UI
+            startButton.disabled = true;
+            startButton.textContent = 'Running...';
+            statusDot.className = 'status-dot running';
+            statusText.textContent = 'Starting workflow...';
+            progressLog.classList.add('active');
+            progressLog.innerHTML = '';
+            resultsContainer.classList.remove('active');
+            
+            // Reset counters
+            queriesCount.textContent = '0';
+            channelsCount.textContent = '0';
+            relevantCount.textContent = '0';
+            analyzedCount.textContent = '0';
+            
+            // Start Server-Sent Events stream
+            eventSource = new EventSource(`/start_workflow?` + new URLSearchParams(formData));
+            
+            eventSource.addEventListener('log', (e) => {
+                const data = JSON.parse(e.data);
+                addLogEntry(data.message, data.type || 'info');
+            });
+            
+            eventSource.addEventListener('status', (e) => {
+                const data = JSON.parse(e.data);
+                updateStatus(data);
+            });
+            
+            eventSource.addEventListener('complete', (e) => {
+                const data = JSON.parse(e.data);
+                handleComplete(data);
+            });
+            
+            eventSource.addEventListener('error', (e) => {
+                handleError();
+            });
+            
+            eventSource.onerror = () => {
+                handleError();
+            };
+        }
+        
+        function addLogEntry(message, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = message;
+            progressLog.appendChild(entry);
+            progressLog.scrollTop = progressLog.scrollHeight;
+        }
+        
+        function updateStatus(data) {
+            if (data.queries !== undefined) queriesCount.textContent = data.queries;
+            if (data.channels !== undefined) channelsCount.textContent = data.channels;
+            if (data.relevant !== undefined) relevantCount.textContent = data.relevant;
+            if (data.analyzed !== undefined) analyzedCount.textContent = data.analyzed;
+            if (data.message) statusText.textContent = data.message;
+        }
+        
+        function handleComplete(data) {
+            statusDot.className = 'status-dot ready';
+            statusText.textContent = 'Workflow complete!';
+            startButton.disabled = false;
+            startButton.textContent = 'Start Discovery Workflow';
+            
+            if (eventSource) {
+                eventSource.close();
+                eventSource = null;
+            }
+            
+            // Display results
+            if (data.results && data.results.length > 0) {
+                displayResults(data.results);
+            }
+            
+            // Refresh session stats
+            loadSessionStats();
+            
+            addLogEntry('✓ Workflow complete!', 'success');
+        }
+        
+        function handleError() {
+            statusDot.className = 'status-dot error';
+            statusText.textContent = 'Error occurred';
+            startButton.disabled = false;
+            startButton.textContent = 'Start Discovery Workflow';
+            
+            if (eventSource) {
+                eventSource.close();
+                eventSource = null;
+            }
+            
+            addLogEntry('✗ Workflow error - check server logs', 'error');
+        }
+        
+        function displayResults(results) {
+            resultsContainer.classList.add('active');
+            resultsContent.innerHTML = '';
+            
+            const relevant = results.filter(r => r.analysis && r.analysis.relevant);
+            
+            if (relevant.length === 0) {
+                resultsContent.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 40px;">No relevant channels found. Try adjusting your search parameters.</p>';
+                return;
+            }
+            
+            relevant.forEach(result => {
+                const card = createResultCard(result);
+                resultsContent.appendChild(card);
+            });
+        }
+        
+        function createResultCard(result) {
+            const card = document.createElement('div');
+            card.className = 'result-card relevant';
+            
+            const analysis = result.analysis || {};
+            const priority = analysis.priority || 'low';
+            const score = analysis.overall_score || 0;
+            const subs = result.subscriber_count || 0;
+            
+            const relevanceScore = analysis.relevance_score || 0;
+            const audienceScore = analysis.audience_match_score || 0;
+            const engagementScore = analysis.engagement_score || 0;
+            const pitch = analysis.pitch || '';
+            
+            card.innerHTML = `
+                <div class="result-header">
+                    <div class="result-title">${escapeHtml(result.channel_name)}</div>
+                    <div class="result-badge ${priority}">${priority}</div>
+                </div>
+                <div class="result-meta">
+                    ${subs.toLocaleString()} subscribers • Overall: ${score}/10
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0; font-size: 12px;">
+                    <div style="background: var(--bg-primary); padding: 8px; border-radius: 2px; border: 1px solid var(--border-color);">
+                        <div style="color: var(--text-tertiary); margin-bottom: 2px;">Relevance</div>
+                        <div style="color: var(--text-primary); font-weight: 500;">${relevanceScore}/10</div>
+                    </div>
+                    <div style="background: var(--bg-primary); padding: 8px; border-radius: 2px; border: 1px solid var(--border-color);">
+                        <div style="color: var(--text-tertiary); margin-bottom: 2px;">Audience</div>
+                        <div style="color: var(--text-primary); font-weight: 500;">${audienceScore}/10</div>
+                    </div>
+                    <div style="background: var(--bg-primary); padding: 8px; border-radius: 2px; border: 1px solid var(--border-color);">
+                        <div style="color: var(--text-tertiary); margin-bottom: 2px;">Engagement</div>
+                        <div style="color: var(--text-primary); font-weight: 500;">${engagementScore}/10</div>
+                    </div>
+                </div>
+                <div class="result-description">
+                    <strong style="color: var(--text-primary);">Why:</strong> ${escapeHtml(analysis.reason || 'No analysis available')}
+                </div>
+                ${analysis.engagement_notes ? `<div class="result-description" style="margin-top: 8px; border-top: 1px solid var(--border-color); padding-top: 8px;">
+                    <strong style="color: var(--success-green);">Engagement:</strong> ${escapeHtml(analysis.engagement_notes)}
+                </div>` : ''}
+                ${pitch ? `<div class="result-description" style="margin-top: 8px; border-top: 1px solid var(--border-color); padding-top: 8px;">
+                    <strong style="color: var(--accent-blue);">Pitch Strategy:</strong> ${escapeHtml(pitch)}
+                </div>` : ''}
+                <a href="${escapeHtml(result.channel_url)}/about" target="_blank" class="result-link">
+                    View Channel →
+                </a>
+            `;
+            
+            return card;
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Mark status as ready
+        statusDot.classList.add('ready');
+        
+        // Load session stats on page load
+        loadSessionStats();
+        
+        // Refresh session stats every 5 seconds during workflow
+        let statsInterval = null;
+        
+        function loadSessionStats() {
+            fetch('/session_stats')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('sessionQueriesTotal').textContent = data.used_queries_count;
+                    document.getElementById('sessionDiscoveredTotal').textContent = data.discovered_channels_count;
+                    document.getElementById('sessionAnalyzedTotal').textContent = data.analyzed_channels_count;
+                })
+                .catch(err => console.error('Error loading session stats:', err));
+        }
+        
+        function resetSession() {
+            if (!confirm('Reset session? This will clear all tracking of used queries and discovered channels.')) {
+                return;
+            }
+            
+            fetch('/reset_session', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        addLogEntry('✓ Session reset', 'success');
+                        loadSessionStats();
+                        // Reset UI counters
+                        queriesCount.textContent = '0';
+                        channelsCount.textContent = '0';
+                        relevantCount.textContent = '0';
+                        analyzedCount.textContent = '0';
+                    }
+                })
+                .catch(err => {
+                    console.error('Error resetting session:', err);
+                    addLogEntry('✗ Failed to reset session', 'error');
+                });
+        }
+    </script>
+</body>
+</html>
+

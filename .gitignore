@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# Database
+*.db
+*.db-journal
+
+# Logs
+*.log
+server.log
+nohup.out
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# API Keys (if any are in separate files)
+*.env
+.env
+
+# CSV data files (optional - uncomment if you don't want to commit data)
+# *.csv
+
+# Generated HTML (optional - these can be regenerated)
+channels_viewer.html
+
+# Test files
+test_*.py
+workflow_log.txt
+test_output.log
+

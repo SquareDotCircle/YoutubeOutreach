@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Flow Diagrams</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #222222;
+            --border-color: #2a2a2a;
+            --text-primary: #e5e5e5;
+            --text-secondary: #9a9a9a;
+            --text-tertiary: #6a6a6a;
+            --accent-blue: #4a9eff;
+            --accent-green: #4ade80;
+            --accent-yellow: #fbbf24;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            letter-spacing: 0.01em;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: 32px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        h2 {
+            font-size: 20px;
+            font-weight: 500;
+            margin: 48px 0 16px 0;
+            color: var(--text-primary);
+        }
+        
+        .note {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-left: 3px solid var(--accent-blue);
+            border-radius: 4px;
+            padding: 16px;
+            margin: 24px 0;
+            font-size: 14px;
+        }
+        
+        .note strong {
+            color: var(--accent-blue);
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        .description {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-left: 3px solid var(--accent-green);
+            border-radius: 4px;
+            padding: 12px 16px;
+            margin: 16px 0;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .diagram-container {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 24px;
+            margin: 16px 0;
+        }
+        
+        .mermaid {
+            text-align: center;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            padding: 20px;
+        }
+        
+        .quick-links {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 24px 0;
+        }
+        
+        .quick-link {
+            font-size: 13px;
+            color: var(--accent-blue);
+            text-decoration: none;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+        
+        .quick-link:hover {
+            border-color: var(--accent-blue);
+            background: rgba(74, 158, 255, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>System Flow Diagrams</h1>
+        
+        <div class="note">
+            <strong>Interactive Diagrams</strong>
+            All diagrams on this page are automatically rendered. Scroll down to see each visualization of the workflow system.
+        </div>
+        
+        <div class="quick-links">
+            <a href="control_panel.html" class="quick-link">Control Panel</a>
+            <a href="channels_viewer.html" class="quick-link">View Database</a>
+        </div>
+
+        <h2>1. Complete System Overview</h2>
+        <div class="description">
+            End-to-end workflow from product definition to channel discovery and analysis
+        </div>
+        <div class="diagram-container">
+            <div class="mermaid">
+graph TB
+    Start([Define Product<br/>& Target Audience])
+    
+    Start --> Control[Control Panel:<br/>Input product context<br/>& search direction]
+    
+    Control --> AI1[AI: Generate<br/>Search Queries]
+    
+    AI1 --> Search[Search YouTube<br/>for each query]
+    
+    Search --> Extract[Extract Channel<br/>Information]
+    
+    Extract --> DB[Save to<br/>SQLite Database]
+    
+    DB --> AI2[AI: Analyze<br/>Channel Relevance]
+    
+    AI2 --> Filter{Relevance<br/>Score}
+    
+    Filter -->|High Score| Relevant[Mark as<br/>Relevant]
+    
+    Filter -->|Low Score| Skip[Mark as<br/>Not Relevant]
+    
+    Relevant --> View[View Results<br/>in Database]
+    
+    Skip --> View
+    
+    View --> Outreach[Manual Outreach<br/>to Relevant Channels]
+    
+    Outreach --> Success([Partnership<br/>Success])
+    
+    style Start fill:#1a4d1a
+    style Control fill:#1a3d5c
+    style AI1 fill:#4a3d5c
+    style AI2 fill:#4a3d5c
+    style Relevant fill:#1a5c1a
+    style Success fill:#1a6e1a
+    style Filter fill:#5c3d1a
+            </div>
+        </div>
+
+        <h2>2. AI Query Generation Flow</h2>
+        <div class="description">
+            How the system uses AI to generate targeted YouTube search queries
+        </div>
+        <div class="diagram-container">
+            <div class="mermaid">
+flowchart TD
+    Start([User Input])
+    
+    Start --> Input1[Product Context:<br/>'Hard drive with<br/>survival knowledge']
+    
+    Start --> Input2[Target Direction:<br/>'Prepper channels,<br/>10k-100k subs']
+    
+    Input1 --> Prompt[Build AI Prompt<br/>with context]
+    Input2 --> Prompt
+    
+    Prompt --> Ollama[Ollama LLM<br/>qwen2.5:3b]
+    
+    Ollama --> Generate[Generate<br/>3-10 queries]
+    
+    Generate --> Parse[Parse JSON<br/>response]
+    
+    Parse --> Validate{Valid<br/>queries?}
+    
+    Validate -->|Yes| Queries[["Query 1: prepper survival library"<br/>"Query 2: off-grid knowledge"<br/>"Query 3: SHTF documentation"]]
+    
+    Validate -->|No| Fallback[Use fallback<br/>queries]
+    
+    Queries --> Next[Pass to<br/>YouTube Search]
+    Fallback --> Next
+    
+    style Ollama fill:#4a3d5c
+    style Queries fill:#1a5c1a
+            </div>
+        </div>
+
+        <h2>3. Channel Discovery & Analysis</h2>
+        <div class="description">
+            The complete flow from search queries to analyzed results
+        </div>
+        <div class="diagram-container">
+            <div class="mermaid">
+flowchart TD
+    Start([Search Queries<br/>Generated])
+    
+    Start --> Loop[For each query...]
+    
+    Loop --> YT[yt-dlp: Search YouTube<br/>Get 5 videos per query]
+    
+    YT --> GetInfo[Extract channel info:<br/>- Name<br/>- Subscribers<br/>- Description<br/>- URL]
+    
+    GetInfo --> Dedup{Already in<br/>database?}
+    
+    Dedup -->|Yes| Skip[Skip duplicate]
+    
+    Dedup -->|No| Save[Save to database]
+    
+    Save --> Analyze[AI Analysis:<br/>Ollama evaluates<br/>channel relevance]
+    
+    Analyze --> Score[Generate scores:<br/>- Relevance: X/10<br/>- Audience Match: X/10<br/>- Engagement: X/10<br/>- Overall: X/10]
+    
+    Score --> Priority{Overall<br/>Score}
+    
+    Priority -->|8-10| High[HIGH Priority<br/>Contact ASAP]
+    
+    Priority -->|5-7| Medium[MEDIUM Priority<br/>Consider]
+    
+    Priority -->|0-4| Low[LOW Priority<br/>Skip]
+    
+    Skip --> More{More<br/>queries?}
+    High --> More
+    Medium --> More
+    Low --> More
+    
+    More -->|Yes| Loop
+    More -->|No| Report[Generate Report<br/>& Update Viewer]
+    
+    Report --> Done([Complete])
+    
+    style Analyze fill:#4a3d5c
+    style High fill:#1a6e1a
+    style Medium fill:#5c4d1a
+    style Low fill:#3a3a3a
+            </div>
+        </div>
+
+        <h2>4. Database Schema</h2>
+        <div class="description">
+            SQLite database structure for storing channel and contact information
+        </div>
+        <div class="diagram-container">
+            <div class="mermaid">
+graph LR
+    Channels[Channels Table:<br/>- channel_id PK<br/>- channel_name<br/>- channel_url<br/>- subscriber_count<br/>- description<br/>- category<br/>- discovered_date]
+    
+    Contacts[Contacts Table:<br/>- id PK<br/>- channel_id FK<br/>- contact_type<br/>- contact_value<br/>- added_date]
+    
+    SearchTerms[Search Terms:<br/>- id PK<br/>- search_term<br/>- source<br/>- created_date]
+    
+    Channels -->|1:N| Contacts
+    
+    style Channels fill:#1a3d5c
+    style Contacts fill:#1a4d3d
+    style SearchTerms fill:#4a3d5c
+            </div>
+        </div>
+
+        <h2>5. Control Panel Workflow</h2>
+        <div class="description">
+            Real-time workflow execution with Server-Sent Events for progress updates
+        </div>
+        <div class="diagram-container">
+            <div class="mermaid">
+sequenceDiagram
+    participant User
+    participant Browser
+    participant Flask
+    participant Ollama
+    participant YouTube
+    participant DB
+    
+    User->>Browser: Fill form & submit
+    Browser->>Flask: POST /start_workflow
+    Flask->>Browser: Open SSE stream
+    
+    Flask->>Ollama: Generate queries
+    Ollama->>Flask: Return 3 queries
+    Flask->>Browser: Event: queries generated
+    
+    loop For each query
+        Flask->>YouTube: Search videos
+        YouTube->>Flask: Return video URLs
+        Flask->>Browser: Event: videos found
+        
+        loop For each video
+            Flask->>YouTube: Get channel info
+            YouTube->>Flask: Channel data
+            Flask->>DB: Save channel
+            Flask->>Browser: Event: channel saved
+        end
+    end
+    
+    loop For each channel
+        Flask->>Ollama: Analyze relevance
+        Ollama->>Flask: Relevance scores
+        Flask->>Browser: Event: analysis complete
+    end
+    
+    Flask->>Browser: Event: workflow complete
+    Flask->>Browser: Close SSE stream
+    Browser->>User: Display results
+            </div>
+        </div>
+
+        <h2>6. File Structure</h2>
+        <div class="description">
+            Key files and their relationships in the system
+        </div>
+        <div class="diagram-container">
+            <div class="mermaid">
+graph TD
+    Root[YoutubeChannels/]
+    
+    Root --> HTML1[control_panel.html<br/>Main UI]
+    Root --> HTML2[channels_viewer.html<br/>Database View]
+    Root --> HTML3[view_diagrams.html<br/>This Page]
+    
+    Root --> Server[control_panel_server.py<br/>Flask Backend]
+    Root --> Workflow[automated_workflow.py<br/>Core Logic]
+    Root --> Viewer[channel_viewer.py<br/>HTML Generator]
+    
+    Root --> DB[(channels.db<br/>SQLite Database)]
+    
+    Root --> Venv[venv/<br/>Python Environment]
+    
+    Server -.->|serves| HTML1
+    Server -.->|executes| Workflow
+    Workflow -.->|writes to| DB
+    Viewer -.->|reads from| DB
+    Viewer -.->|generates| HTML2
+    
+    style HTML1 fill:#1a3d5c
+    style HTML2 fill:#1a3d5c
+    style HTML3 fill:#1a3d5c
+    style Server fill:#4a3d5c
+    style DB fill:#1a5c1a
+            </div>
+        </div>
+        
+        <div class="note">
+            <strong>Need to modify the system?</strong>
+            All scripts are modular and well-documented. Start with control_panel.html to customize the user interface, or automated_workflow.py to adjust the search and analysis logic.
+        </div>
+    </div>
+    
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'dark',
+            themeVariables: {
+                primaryColor: '#1a3d5c',
+                primaryTextColor: '#e5e5e5',
+                primaryBorderColor: '#4a9eff',
+                lineColor: '#4a9eff',
+                secondaryColor: '#1a5c1a',
+                tertiaryColor: '#4a3d5c',
+                background: '#222222',
+                mainBkg: '#1a1a1a',
+                secondBkg: '#222222',
+                tertiaryBkg: '#2a2a2a',
+                textColor: '#e5e5e5',
+                border1: '#2a2a2a',
+                border2: '#3a3a3a',
+                fontSize: '14px'
+            }
+        });
+    </script>
+</body>
+</html>
