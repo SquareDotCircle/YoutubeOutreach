@@ -1,4 +1,33 @@
-<!-- a84f9065-562d-4efc-9b87-795af4feb050 e353c56c-5790-432a-8a6b-78a8ccad7d7d -->
+---
+name: AI Content Farm Filter & Parallelization Implementation
+overview: ""
+todos:
+  - id: 2c024a01-bb03-4095-a76c-5dd925d569e9
+    content: Modify get_video_details() to capture video titles
+    status: pending
+  - id: dbd912f3-77a9-49de-88fb-26ee30c88ada
+    content: Add analyze_title_patterns() function for spam detection
+    status: pending
+  - id: e97dcf17-e520-4d59-b404-0a93aa73e02f
+    content: Add is_ai_content_farm() with aggressive thresholds
+    status: pending
+  - id: 46a565dd-bff4-4e6f-875f-53b4d258bd48
+    content: Parallelize YouTube searches with ThreadPoolExecutor
+    status: pending
+  - id: 8d543e41-00c5-420f-a92b-a8911a3b25db
+    content: Parallelize channel info extraction
+    status: pending
+  - id: f0a8bd17-b0a2-47f6-b3ae-c0c5045f76d8
+    content: Replace quick_filter_channel with AI farm detection
+    status: pending
+  - id: b30be57b-510e-48d8-8225-bfcea2da1530
+    content: Update workflow step numbering in UI messages
+    status: pending
+  - id: c5694550-a16a-4260-a644-ef83a6834c08
+    content: Test complete workflow with new filtering and parallelization
+    status: pending
+---
+
 # AI Content Farm Filter & Parallelization Implementation
 
 ## Overview
@@ -45,6 +74,8 @@ def get_enhanced_channel_data():
     enhanced_data['recent_titles'] = [v.get('title', '') for v in detailed_videos]
 ```
 
+
+
 ### 2. Add AI Farm Detection to `control_panel_server.py`
 
 Add comprehensive detection function (new):
@@ -70,11 +101,11 @@ def is_ai_content_farm(channel_data: Dict) -> tuple[bool, str]:
     # Return True if red_flags >= 3
 ```
 
+
+
 ### 3. Replace Pre-Filter in `workflow_generator()`
 
-**Remove**: Existing `quick_filter_channel()` calls (lines ~475-490)
-
-**Add**: New filtering stage after enhanced extraction:
+**Remove**: Existing `quick_filter_channel()` calls (lines ~475-490)**Add**: New filtering stage after enhanced extraction:
 
 ```python
 # After enhanced extraction completes (around line 466)
@@ -96,6 +127,8 @@ yield {'type': 'log', 'message': f'✓ Filtered {ai_farm_count} AI farms, {len(r
 
 # Update step numbering: Database save becomes Step 4, Analysis becomes Step 5
 ```
+
+
 
 ### 4. Add Parallelization
 
@@ -138,6 +171,8 @@ for channel_info in channel_infos:
     # Then extract enhanced data (still sequential for now)
 ```
 
+
+
 ### 5. Update Step Numbers in UI Messages
 
 After adding AI filter stage, renumber:
@@ -149,19 +184,19 @@ After adding AI filter stage, renumber:
 
 1. `/Users/jordanrogan/YoutubeChannels/enhanced_channel_extractor.py`
 
-   - Modify `get_video_details()` to capture titles
-   - Add `analyze_title_patterns()` function
-   - Update `get_enhanced_channel_data()` to store titles
+- Modify `get_video_details()` to capture titles
+- Add `analyze_title_patterns()` function
+- Update `get_enhanced_channel_data()` to store titles
 
 2. `/Users/jordanrogan/YoutubeChannels/control_panel_server.py`
 
-   - Add imports: `concurrent.futures`, `partial`
-   - Add `is_ai_content_farm()` function
-   - Remove `quick_filter_channel()` usage
-   - Parallelize YouTube searches
-   - Parallelize channel extraction
-   - Add AI farm filtering stage
-   - Update step numbering
+- Add imports: `concurrent.futures`, `partial`
+- Add `is_ai_content_farm()` function
+- Remove `quick_filter_channel()` usage
+- Parallelize YouTube searches
+- Parallelize channel extraction
+- Add AI farm filtering stage
+- Update step numbering
 
 ## Expected Results
 
@@ -180,15 +215,3 @@ After adding AI filter stage, renumber:
 **Cost:**
 
 - Same ($0.12 per workflow)
-- Better quality = higher ROI
-
-### To-dos
-
-- [ ] Modify get_video_details() to capture video titles
-- [ ] Add analyze_title_patterns() function for spam detection
-- [ ] Add is_ai_content_farm() with aggressive thresholds
-- [ ] Parallelize YouTube searches with ThreadPoolExecutor
-- [ ] Parallelize channel info extraction
-- [ ] Replace quick_filter_channel with AI farm detection
-- [ ] Update workflow step numbering in UI messages
-- [ ] Test complete workflow with new filtering and parallelization

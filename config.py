@@ -4,14 +4,24 @@ Configuration file for optional features
 """
 
 import os
+from pathlib import Path
 
-# YouTube Data API v3 (Optional - for faster extraction)
-# Get your key: https://console.cloud.google.com/apis/credentials
-YOUTUBE_API_KEY = os.environ.get('YOUTUBE_API_KEY', '')
-USE_YOUTUBE_API = bool(YOUTUBE_API_KEY)
+# Load .env file if it exists
+env_path = Path(__file__).parent / '.env'
+if env_path.exists():
+    with open(env_path) as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith('#') and '=' in line:
+                key, value = line.split('=', 1)
+                os.environ.setdefault(key.strip(), value.strip())
+
+# YouTube Data API v3 (Optional - disabled, using yt-dlp instead)
+YOUTUBE_API_KEY = ''
+USE_YOUTUBE_API = False
 
 # Claude API (Required)
-ANTHROPIC_API_KEY = os.environ.get('ANTHROPIC_API_KEY', '')
+ANTHROPIC_API_KEY = 'YOUR_CLAUDE_API_KEY_HERE'  # <-- Paste your key here
 
 # Enhanced data extraction settings
 EXTRACT_ENHANCED_METRICS = True  # Enable Tier 1 metrics (avg views, engagement, etc.)
